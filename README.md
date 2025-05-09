@@ -1,8 +1,11 @@
 # CS-596-Project
 Video:
 LED Brightening: https://www.youtube.com/watch?v=M4oykqQe1g0
+
 LED Dimming: https://www.youtube.com/watch?v=BVG3pJ4KtBI
+
 Automatic Shutoff: https://www.youtube.com/shorts/7Y9-krNZ59U
+
 Button Functions: https://www.youtube.com/shorts/MZj_aERt2Ro
 
 ## Circuit Diagram Connections
