@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 Sensor Data</title> <!-- Title of the graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Automated Light Controller Data Visualization</h1>
+    <p>User Defined Normal Light Level: <span id="normalLightLevel"></span></p> <!-- States the user’s current preferred light level -->
+    <div>
+        <canvas id="chart"></canvas>
+    </div>
+
+    <script>
+        const userPreferredLightLvl = document.getElementById('normalLightLevel'); // Gets the user's preferred light level
+        const context = document.getElementById('chart').getContext('2d'); // Gets the drawing context of the canvas
+        const chart = new Chart(context, { // Creates a new Chart.js chart
+            type: 'line', // Defines the chart type as a line chart
+            data: {
+                labels: {{ labels|tojson }}, // Gets the time stamps
+                datasets: [
+                    {
+                        label: 'Reading 36',
+                        data: {{ reading36_data|tojson }}, // Gets the data for reading 36
+                        borderColor: 'rgba(56, 160, 237, 1)', // Line color
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'Reading 37',
+                        data: {{ reading37_data|tojson }}, // Gets the data for reading 37
+                        borderColor: 'rgba(250, 161, 63, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'Reading 38',
+                        data: {{ reading38_data|tojson }}, // Gets the data for reading 38
+                        borderColor: 'rgba(72, 190, 190, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'Reading 39',
+                        data: {{ reading39_data|tojson }}, // Gets the data for reading 39
+                        borderColor: 'rgba(255, 97, 130, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'Average Light Level',
+                        data: {{ avg_data|tojson }}, // Gets the data for the average light level
+                        borderColor: 'rgba(255, 200, 90, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true, // Y-axis starts at 0
+                        title: {
+                            display: true,
+                            text: 'Light Level' // Y-axis label
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time' // X-axis label
+                        },
+                        ticks: {
+                            // Tick options can go here
+                        }
+                    }
+                }
+            }
+        });
+
+        function fetchData() { // Function to get new data
+            fetch('/latest_data') // Requests data from the server
+                .then(response => response.json()) // Parses the response as JSON
+                .then(newData => {
+                    if (newData && newData.hasOwnProperty('formatted_timestamp')) {
+                        chart.data.labels.push(newData.formatted_timestamp); // Adds new timestamp
+                        chart.data.datasets[0].data.push(newData.reading36);
+                        chart.data.datasets[1].data.push(newData.reading37);
+                        chart.data.datasets[2].data.push(newData.reading38);
+                        chart.data.datasets[3].data.push(newData.reading39);
+                        chart.data.datasets[4].data.push(newData.averageLightLvl);
+                        chart.update();
+
+                        const maxDataPoints = 20;
+                        if (chart.data.labels.length > maxDataPoints) {
+                            chart.data.labels.shift();
+                            chart.data.datasets.forEach((dataset) => {
+                                dataset.data.shift();
+                            });
+                        }
+
+                        // Update the normal light level display if it's in the new data
+                        if (newData.hasOwnProperty('normalLightLevel')) {
+                            userPreferredLightLvl.textContent = newData.normalLightLevel;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        setInterval(fetchData, 10000); // Fetch new data every 10 seconds
+
+        // Initial fetch to display any initial normalLightLevel if available
+        fetch('/latest_data')
+            .then(response => response.json())
+            .then(initialData => {
+                if (initialData && initialData.hasOwnProperty('normalLightLevel')) {
+                    userPreferredLightLvl.textContent = initialData.normalLightLevel;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching initial data:', error);
+            });
+    </script>
+</body>
+</html>
