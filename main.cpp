@@ -18,8 +18,6 @@
 Adafruit_DotStar strip(NUMPIXELS, MOSI, SCK, DOTSTAR_BGR);
 
 
-
-
 // 4 Photoresistor Pins
 #define PIN36 36
 #define PIN39 39 
@@ -27,17 +25,9 @@ Adafruit_DotStar strip(NUMPIXELS, MOSI, SCK, DOTSTAR_BGR);
 #define PIN38 38
 
 
-
-
-
-
-
-
 // defining green and red button pins (INC - Green, DEC - Red)
 #define INCBrightness 32
 #define DECBrightness 2
-
-
 
 
 // assign the control pins for the brightness inc and dec
@@ -49,16 +39,8 @@ const int tolerance = 200;
 int brightness = 0;
 
 
-
-
 char ssid[] = "NETGEAR34";
 char pass[] = "Cost4Mes4,S4nt44n4,S4nDiego";
-
-
-
-
-
-
 
 
 const char kHostname[] = "3.147.36.137";
@@ -66,12 +48,8 @@ const int kPort = 5000;
 const char kPath[] = "/";
 
 
-
-
 const int kNetworkTimeout = 30 * 1000;
 const int kNetworkDelay = 1000;
-
-
 
 
 // create object representing display
@@ -83,8 +61,6 @@ unsigned long getCurrentTime() {
   time(&now);
   return (unsigned long)now;
 }
-
-
 
 
 void setup() {
@@ -165,8 +141,6 @@ void loop() {
   Serial.println(reading36);
 
 
-
-
   int reading37 = analogRead(PIN37);
   display.print("Pin 37: ");
   display.setTextColor(TFT_ORANGE);
@@ -176,8 +150,6 @@ void loop() {
 
   Serial.print("Pin 37: ");
   Serial.println(reading37);
-
-
 
 
   int reading38 = analogRead(PIN38);
@@ -191,8 +163,6 @@ void loop() {
   Serial.println(reading38);
 
 
-
-
   int reading39 = analogRead(PIN39);
   display.print("Pin 39: ");
   display.setTextColor(TFT_ORANGE);
@@ -202,12 +172,6 @@ void loop() {
 
   Serial.print("Pin 39: ");
   Serial.println(reading39);
-
-
-
-
-
-
 
 
   // Calculate the average light level that the photoresistors are capturing. Print the total average
@@ -222,8 +186,6 @@ void loop() {
 
   Serial.print("Average Light Level: ");
   Serial.println(averageLightLvl);
-
-
 
 
   // Printing the brightness of the LED lights
@@ -296,13 +258,7 @@ void loop() {
     Serial.println("LED automatically turned off due to high average light level!");
   }
 
-
-
-
   unsigned long currentTime = getCurrentTime();
-
-
-
 
   // createthe data string to send to our AWS cloud server
   String data = "reading36=" + String(reading36) +
@@ -320,13 +276,10 @@ void loop() {
 
 
 
-
   // code retrieved from lab 3
   int err = 0;
   WiFiClient c;
   HttpClient http(c);
-
-
 
 
   err = http.get(kHostname, kPort, dataPath.c_str());
